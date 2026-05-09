@@ -1,0 +1,396 @@
+/* ============================================
+   WEATHER APP — GLASS MORPHISM UI
+   ============================================ */
+
+/* ---------- RESET & BASE ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;        /* ✅ FIXED: was center, now content starts from top */
+    font-family: 'Poppins', sans-serif;
+    background: url("bl.png") no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;   /* ✅ background stays fixed while scrolling */
+    overflow-y: auto;               /* ✅ FIXED: was hidden, now allows scroll */
+    position: relative;
+    padding: 40px 20px;             /* ✅ breathing room top and bottom */
+}
+
+/* ---------- OVERLAY ---------- */
+.overlay {
+    position: fixed;                /* ✅ fixed so it covers full screen while scrolling */
+    inset: 0;
+    background: rgba(0, 0, 40, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 1;
+}
+
+/* ---------- CONTAINER ---------- */
+.container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 100%;
+    max-width: 900px;
+    padding: 20px;
+    padding-bottom: 50px;           /* ✅ space at bottom so card doesn't get cut */
+    animation: fadeInDown 0.7s ease both;
+}
+
+/* ---------- TITLE ---------- */
+h1 {
+    color: white;
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 35px;
+    letter-spacing: 1px;
+    text-shadow:
+        0 0 30px rgba(79, 172, 254, 0.6),
+        0 2px 10px rgba(0, 0, 0, 0.4);
+    animation: fadeInDown 0.6s ease both;
+}
+
+/* ---------- SEARCH BOX ---------- */
+.search-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    animation: fadeInDown 0.75s ease both;
+}
+
+.search-box input {
+    width: 420px;
+    padding: 16px 25px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(18px);
+    color: white;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.25),
+        inset 0 0 12px rgba(255, 255, 255, 0.06);
+}
+
+.search-box input:focus {
+    border-color: rgba(79, 172, 254, 0.7);
+    box-shadow:
+        0 0 0 3px rgba(79, 172, 254, 0.2),
+        0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.search-box input::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.search-box button {
+    padding: 14px 45px;
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 22px rgba(79, 172, 254, 0.5);
+    letter-spacing: 0.5px;
+}
+
+.search-box button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 35px rgba(79, 172, 254, 0.85);
+}
+
+.search-box button:active {
+    transform: translateY(0px);
+}
+
+/* ---------- SUGGESTIONS DROPDOWN ---------- */
+#suggestions-list {
+    position: absolute;
+    top: calc(16px + 16px + 16px + 15px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 420px;
+
+    background: rgba(15, 20, 60, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+
+    list-style: none;
+    padding: 6px 0;
+    margin: 0;
+    z-index: 9999;
+
+    max-height: 220px;
+    overflow-y: auto;
+
+    display: none;
+}
+
+#suggestions-list::-webkit-scrollbar {
+    width: 5px;
+}
+#suggestions-list::-webkit-scrollbar-thumb {
+    background: rgba(79, 172, 254, 0.5);
+    border-radius: 10px;
+}
+
+.suggestion-item {
+    padding: 12px 20px;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    transition: background 0.2s ease, padding-left 0.2s ease;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background: rgba(79, 172, 254, 0.2);
+    padding-left: 26px;
+    color: white;
+}
+
+/* ---------- WEATHER CARD ---------- */
+.weather-card {
+    width: 100%;
+    max-width: 850px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 50px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(22px);
+    box-shadow:
+        0 8px 40px rgba(0, 0, 0, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.04);
+    color: white;
+    animation: fadeInUp 0.8s ease both;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.weather-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 16px 50px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- CARD LEFT ---------- */
+.left {
+    text-align: left;
+}
+
+.left h2 {
+    font-size: 1.4rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.5px;
+}
+
+/* ---------- WEATHER ICON ---------- */
+#weather-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 5px;
+    filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.6)); /* ✅ glowing icon */
+}
+
+/* ---------- TEMPERATURE ---------- */
+.temp {
+    font-size: 4.5rem;              /* ✅ FIXED: reduced from 5.5rem */
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, #ffffff, #a8d8ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.condition {
+    font-size: 1.2rem;
+    margin-top: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+}
+
+.feel {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ---------- CARD RIGHT ---------- */
+.right {
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: border-color 0.3s ease;
+}
+
+.info:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.info:hover {
+    border-color: rgba(79, 172, 254, 0.4);
+}
+
+.info span:first-child {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.info span:last-child {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #a8d8ff;
+}
+
+/* ---------- DIVIDER ---------- */
+.weather-card::before {
+    content: '';
+    width: 1px;
+    height: 70%;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    align-self: center;
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------- RESPONSIVE: Tablet ---------- */
+@media (max-width: 900px) {
+    h1 {
+        font-size: 2.8rem;
+    }
+
+    .search-box input {
+        width: 300px;
+    }
+
+    #suggestions-list {
+        width: 300px;
+    }
+
+    .weather-card {
+        flex-direction: column;
+        gap: 35px;
+        padding: 35px 30px;
+    }
+
+    .weather-card::before {
+        display: none;
+    }
+
+    .right {
+        width: 100%;
+    }
+
+    .temp {
+        font-size: 4rem;
+    }
+}
+
+/* ---------- RESPONSIVE: Mobile ---------- */
+@media (max-width: 600px) {
+    body {
+        padding: 25px 15px;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    .search-box input {
+        width: 90vw;
+    }
+
+    #suggestions-list {
+        width: 90vw;
+    }
+
+    .weather-card {
+        padding: 25px 20px;
+    }
+
+    .temp {
+        font-size: 3.2rem;
+    }
+}
+
+/* ---------- RESPONSIVE: Very Small Phones ---------- */
+@media (max-width: 380px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .temp {
+        font-size: 2.8rem;
+    }
+
+    .search-box button {
+        padding: 12px 30px;
+        font-size: 0.9rem;
+    }
+}
