@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Glass Weather Card</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="overlay"></div>
+
+  <div class="container">
+
+    <h1>Weather App</h1>
+
+    <div class="search-box">
+      <input type="text" id="city-input" placeholder="Enter city name" autocomplete="off" />
+      <ul id="suggestions-list" class="suggestions-box"></ul>
+      <button onclick="getWeather()">Get Weather</button>
+    </div>
+
+    <div class="weather-card">
+
+      <div class="left">
+
+        <h2 id="city-name">New York, USA</h2>
+
+        <!-- Weather Icon -->
+        <img id="weather-icon" src="" alt="weather icon" style="width: 72px; display: none; margin-bottom: 5px;" />
+
+        <div id="temperature" class="temp">24°C</div>
+
+        <p id="condition" class="condition">Partly Cloudy</p>
+
+        <p id="feels-like" class="feel">Feels like 25°C</p>
+
+      </div>
+
+      <div class="right">
+
+        <div class="info">
+          <span>Humidity</span>
+          <span id="humidity-value">65%</span>
+        </div>
+
+        <div class="info">
+          <span>Wind Speed</span>
+          <span id="wind-speed-value">12 km/h</span>
+        </div>
+
+        <div class="info">
+          <span>Pressure</span>
+          <span id="pressure-value">1012 hPa</span>
+        </div>
+
+        <div class="info">
+          <span>Visibility</span>
+          <span id="visibility-value">10 km</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
